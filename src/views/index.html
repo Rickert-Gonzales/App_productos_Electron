@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-oOs/gFavzADqv3i5nCM+9CzXe3e5vXLXZ5LZ7PplpsWpTCufB7kqkTlC9FtZ5nJo" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container p-4">
+        <div id="productos" class="row">
+        </div>
+    </div>
+    
+    <script>
+        
+        const { ipcRenderer } = require('electron')
+        const products = document.querySelector('#productos')
+        
+        ipcRenderer.on('product:new', (e, newProduct) => {
+            //esto me crea una nueva seccion donde apareceran los datos
+            const newProductTemplate = `
+            <div class ="col-xs-4 p-2">
+                <div class="card text-center">
+                    <div class="card-header">
+                        <h5 class="card-title">${newProduct.name}</h5>
+                    </div>
+                    <div class="card-body">
+                        ${newProduct.description}
+                        <hr>
+                        ${newProduct.price}
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-danger btn-sm">
+                            ELIMINAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+            `
+            //con esta linea de codigo lo agregamos al html
+            products.innerHTML += newProductTemplate
+
+            //con estas lineas eliminamos cada una de las etiquetas creadas
+            //primero seccionamos todos los botones con el comando document.querySelectorAll
+            //identificamos los botones a seleccionar medinet la clase btn.btn-danger
+            //y lo almacenamos en una constante
+            const btns = document.querySelectorAll('btn.btn-danger')
+
+            //despues interamos la constante y la recorremos con forEach
+            //asignandole un addEventListener para escuchar el click y poder eliminar la tarjeta
+            btns.forEach(btn => {
+                btn.addEventListener('click', e => {
+                    //parentElement nos ayuda a escalara los divs segun la estructura que tenga
+                    //para asi eliminar toda la terjeta
+                    e.target.parentElement.parentElement.parentElement.remove()
+                })
+            })
+        })
+        
+        ipcRenderer.on('products:remove-all', (e) => {
+            products.innerHTML = ''
+        })
+    </script>
+</body>
+</html>

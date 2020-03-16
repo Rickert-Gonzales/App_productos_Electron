@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-oOs/gFavzADqv3i5nCM+9CzXe3e5vXLXZ5LZ7PplpsWpTCufB7kqkTlC9FtZ5nJo" crossorigin="anonymous">
+    <title>Agrega nuevo prducto</title>
+</head>
+<body>
+    <form class="p-4">
+        <div class="form-group">
+            <input type="text" id="name" class="form-control" placeholder="Product's Name" autofocus>
+        </div>
+        <div class="form-group">
+            <input type="number" id="price" class="form-control" placeholder="Price">
+        </div>
+        <div class="form-group">
+            <input type="text" id="description" class="form-control" placeholder="Description">
+        </div>
+        <button class="btn btn-primary btn-block">Guardar Producto</button>
+    </form>
+
+    <script>
+        //para comunicar una ventana con otra, necesitamos usar un metodo
+        //llamado ipcRenderer, esto nos permite comunicar las ventanas y
+        //comvertir todo el codigo a codigo para nuestras ventanas
+        const { ipcRenderer } = require('electron');
+
+        //eliminamos el reolod del formulario
+        const form = document.querySelector('form');
+        //hacemos que se escuche el evnto
+        form.addEventListener('submit', e => {
+            //mostramos el evento en constante creadas con su propio nombre
+            const nameProduct = document.querySelector('#name').value;
+            const priceProduct = document.querySelector('#price').value;
+            const descProduct = document.querySelector('#description').value;
+
+            //creamos una objeto para el comunicador, que contenga los datos
+            const newProduct = {
+                name: nameProduct,
+                price: priceProduct,
+                description: descProduct
+            }
+            //ponemos el comunicador para las ventanas
+            //y en los parentecis ponemos el nombre del comunicador
+            ipcRenderer.send('product:new', newProduct)
+            //unas capturado el evento le quitamos el auto reload
+            e.preventDefault();
+        })
+    </script>
+</body>
+</html>
